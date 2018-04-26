@@ -3,7 +3,9 @@
 
 import requests
 from bs4 import BeautifulSoup
-import re, time, sys
+import re
+import time
+import sys
 
 
 # 获取网页源码
@@ -17,30 +19,6 @@ def GetHtml(htmlUrl):
     except Exception as e:
         print('\n\tWARN\t%s' %e)
         return htmlUrl
-
-# # 按书名搜索笔趣阁书库
-# def SearchBook(bookName):
-#     searchUrl = 'http://www.biquge5200.com/modules/article/search.php?searchkey=' +bookName
-#     searchHtml = GetHtml(searchUrl)
-#
-#     soup = BeautifulSoup(searchHtml, 'html.parser')
-#     searchBookNameHtmlList = soup.select('.odd')
-#     if len(searchBookNameHtmlList) == 0:
-#         return None
-#
-#     patternBookInfo = r'href'
-#     patternBookName = r'/">(.*?)</a>'
-#     patternBookUrl = r'http(.*)"'
-#
-#     for searchBookNameHtml in searchBookNameHtmlList:
-#         searchBookNameHtml = str(searchBookNameHtml)
-#         getBookInfo = re.search(patternBookInfo, searchBookNameHtml)
-#         if getBookInfo is not None:
-#             getBookName = re.search(patternBookName, searchBookNameHtml).group().replace('/">', '').replace('</a>', '')
-#             if getBookName == bookName:
-#                 bookUrl = re.search(patternBookUrl, searchBookNameHtml).group().replace('"', '')
-#                 return bookUrl
-
 
 # 获取小说目录
 def GetChapterHtml(htmlSource, bookUrl):
@@ -64,7 +42,7 @@ def GetChapterHtml(htmlSource, bookUrl):
     chapterHtml = []
     for chapterNum in chapterNumList:
         chapterHtml.append(bookUrl + chapterNum +'.html')
-    return chapterHtml
+    return bookName, chapterHtml
 
 # 解析小说标题、正文
 def GetArticle(articleHtmlSource, txtFile):
@@ -94,27 +72,20 @@ def GetArticle(articleHtmlSource, txtFile):
 
 
 if __name__ == '__main__':
-    # BookName = input('Please input a book Name: ')
-    BookName = '111'
 
     Speed = 0
     SleepTime = 2
 
-    # print('\nStart search book...')
-    SaveRoute = './'        # 下载保存位置
+    SaveRoute = 'C:/Users/Ray/Desktop/'        # 下载保存位置
     # BookUrl = SearchBook(BookName)
     # BookUrl = 'http://www.biqu.cm/2_2077/'
     BookUrl = 'http://www.biquge.com.tw/3_3593/'
-    if BookUrl == None:
-        print('\tERROR\tNot Find %s' %BookName)
-        sys.exit(1)
 
     print('\nStart download book...')
-    print('\nThe book will save at ' +SaveRoute + BookName +'.txt\n')
     # 书籍目录页
     HtmlSource = GetHtml(BookUrl)
     # print(HtmlSource)
-    ChapterUrl = GetChapterHtml(HtmlSource, BookUrl)   # 章节地址列表
+    BookName, ChapterUrl = GetChapterHtml(HtmlSource, BookUrl)   # 章节地址列表
     # print(ChapterUrl)
     TxtFile = open(SaveRoute+ BookName +'.txt', 'w', encoding='utf-8')
 
